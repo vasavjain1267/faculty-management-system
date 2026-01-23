@@ -1,79 +1,33 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
-import { Calendar, Download, Filter, Search, Building2, Loader2 } from "lucide-react"
+import { Calendar, Download, Filter, Search, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { StatusBadge } from "@/components/ui/status-badge"
-import { createClient } from "@/lib/supabase/client"
-import { toast } from "sonner"
-
-interface Job {
-  id: string
-  title: string
-  department: string
-  post_type: string
-  deadline: string
-  description: string
-  requirements: string
-  pdf_url: string | null
-  status: string
-  application_count: number
-  created_at: string
-}
+import { mockJobs, mockDepartments } from "@/lib/mock-data"
 
 export default function JobsPage() {
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [departments, setDepartments] = useState<string[]>([])
-  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [departmentFilter, setDepartmentFilter] = useState<string>("all")
   const [postTypeFilter, setPostTypeFilter] = useState<string>("all")
-  const supabase = createClient()
-
-  useEffect(() => {
-    fetchJobs()
-  }, [])
-
-  const fetchJobs = async () => {
-    try {
-      // Fetch all active jobs
-      const { data: jobsData, error: jobsError } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
-
-      if (jobsError) throw jobsError
-
-      setJobs(jobsData || [])
-
-      // Extract unique departments
-      const uniqueDepts = [...new Set(jobsData?.map(job => job.department) || [])]
-      setDepartments(uniqueDepts)
-    } catch (error) {
-      console.error('Error fetching jobs:', error)
-      toast.error("Failed to load jobs")
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const filteredJobs = useMemo(() => {
-    return jobs.filter((job) => {
+    return mockJobs.filter((job) => {
       const matchesSearch =
         job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         job.department.toLowerCase().includes(searchQuery.toLowerCase())
       const matchesDepartment = departmentFilter === "all" || job.department === departmentFilter
-      const matchesPostType = postTypeFilter === "all" || job.post_type === postTypeFilter
+      const matchesPostType = postTypeFilter === "all" || job.postType === postTypeFilter
       return matchesSearch && matchesDepartment && matchesPostType
     })
-  }, [jobs, searchQuery, departmentFilter, postTypeFilter])
+  }, [searchQuery, departmentFilter, postTypeFilter])
 
-  const activeJobs = filteredJobs
+  const activeJobs = filteredJobs.filter((job) => job.status === "active")
+  const closedJobs = filteredJobs.filter((job) => job.status === "closed")
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -105,9 +59,9 @@ export default function JobsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Departments</SelectItem>
-                {departments.map((dept) => (
-                  <SelectItem key={dept} value={dept}>
-                    {dept}
+                {mockDepartments.map((dept) => (
+                  <SelectItem key={dept.id} value={dept.name}>
+                    {dept.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -127,45 +81,51 @@ export default function JobsPage() {
         </CardContent>
       </Card>
 
-      {/* Loading State */}
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      ) : (
-        <>
-          {/* Active Jobs */}
-          <section className="mb-12">
-            <h2 className="mb-4 text-lg font-semibold">
-              Active Positions <span className="text-muted-foreground">({activeJobs.length})</span>
-            </h2>
-            {activeJobs.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <Building2 className="h-12 w-12 text-muted-foreground/50" />
-                  <p className="mt-4 text-muted-foreground">No active positions available at the moment.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {activeJobs.map((job) => (
-                  <JobCard key={job.id} job={job} />
-                ))}
-              </div>
-            )}
-          </section>
-        </>
+      {/* Active Jobs */}
+      <section className="mb-12">
+        <h2 className="mb-4 text-lg font-semibold">
+          Active Positions <span className="text-muted-foreground">({activeJobs.length})</span>
+        </h2>
+        {activeJobs.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <Building2 className="h-12 w-12 text-muted-foreground/50" />
+              <p className="mt-4 text-muted-foreground">No active positions match your search criteria.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {activeJobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Closed Jobs */}
+      {closedJobs.length > 0 && (
+        <section>
+          <h2 className="mb-4 text-lg font-semibold text-muted-foreground">
+            Closed Positions <span>({closedJobs.length})</span>
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {closedJobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        </section>
       )}
     </div>
   )
 }
 
-function JobCard({ job }: { job: Job }) {
+function JobCard({ job }: { job: (typeof mockJobs)[0] }) {
+  const isActive = job.status === "active"
   const deadlineDate = new Date(job.deadline)
-  const isDeadlineNear = deadlineDate.getTime() - Date.now() < 7 * 24 * 60 * 60 * 1000
+  const isDeadlineNear = isActive && deadlineDate.getTime() - Date.now() < 7 * 24 * 60 * 60 * 1000
 
   return (
-    <Card>
+    <Card className={!isActive ? "opacity-75" : undefined}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
@@ -184,27 +144,22 @@ function JobCard({ job }: { job: Job }) {
         </div>
         <div className="mt-2">
           <span className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">
-            {job.post_type}
+            {job.postType}
           </span>
         </div>
-        {job.description && (
-          <p className="mt-3 text-sm text-muted-foreground line-clamp-2">
-            {job.description}
-          </p>
-        )}
       </CardContent>
       <CardFooter className="flex gap-2 pt-3 border-t">
-        {job.pdf_url && (
-          <Button variant="outline" size="sm" className="flex-1 bg-transparent" asChild>
-            <a href={job.pdf_url} target="_blank" rel="noopener noreferrer">
-              <Download className="mr-2 h-4 w-4" />
-              View PDF
-            </a>
+        <Button variant="outline" size="sm" className="flex-1 bg-transparent" asChild>
+          <a href={job.pdfUrl} download>
+            <Download className="mr-2 h-4 w-4" />
+            Download PDF
+          </a>
+        </Button>
+        {isActive && (
+          <Button size="sm" className="flex-1" asChild>
+            <Link href={`/apply/${job.id}`}>Apply Now</Link>
           </Button>
         )}
-        <Button size="sm" className="flex-1" asChild>
-          <Link href={`/apply/${job.id}`}>Apply Now</Link>
-        </Button>
       </CardFooter>
     </Card>
   )
