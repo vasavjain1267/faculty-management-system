@@ -2,8 +2,9 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Search, UserPlus, Eye, Pencil, Filter, MoreHorizontal, Mail, Phone, Calendar, Loader2 } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -30,10 +31,49 @@ import { toast } from "sonner"
 type Employee = (typeof mockEmployees)[0]
 
 export default function EmployeesPage() {
-  const [employees, setEmployees] = useState(mockEmployees)
+  const [employees, setEmployees] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedDepartment, setSelectedDepartment] = useState("all")
   const [selectedStatus, setSelectedStatus] = useState("all")
+  const supabase = createClient()
+
+  useEffect(() => {
+    fetchEmployees()
+  }, [])
+
+  async function fetchEmployees() {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .in('role', ['faculty', 'admin'])
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      // Transform data to match expected format
+      const transformedData = (data || []).map(profile => ({
+        id: profile.id,
+        employeeId: profile.employee_id || 'N/A',
+        name: profile.full_name || profile.email,
+        email: profile.email,
+        phone: profile.phone || 'N/A',
+        department: profile.department || 'Not Assigned',
+        designation: profile.role === 'admin' ? 'Administrator' : 'Faculty',
+        joiningDate: new Date(profile.created_at).toLocaleDateString(),
+        status: 'active',
+        avatar: profile.avatar_url
+      }))
+
+      setEmployees(transformedData)
+    } catch (error) {
+      console.error('Error fetching employees:', error)
+      toast.error("Failed to load employees")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filteredEmployees = employees.filter((emp) => {
     const matchesSearch =
