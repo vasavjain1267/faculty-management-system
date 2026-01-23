@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 
 export default function RegisterPage() {
-  redirect("/login")
+  // Redirect to login page with register tab
+  redirect("/login?tab=register")
 }

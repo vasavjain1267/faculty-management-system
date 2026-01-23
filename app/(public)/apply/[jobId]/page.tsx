@@ -6,7 +6,7 @@ import { Check, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { mockJobs } from "@/lib/mock-data"
+// import { mockJobs } from "@/lib/mock-data"
 import { PersonalInfoStep } from "@/components/application/personal-info-step"
 import { EducationStep } from "@/components/application/education-step"
 import { ResearchStep } from "@/components/application/research-step"
@@ -14,6 +14,8 @@ import { UploadsStep } from "@/components/application/uploads-step"
 import { PreviewStep } from "@/components/application/preview-step"
 import type { PersonalInfo, Education, ResearchPaper } from "@/lib/types"
 import { toast } from "sonner"
+import { createClient } from "@/lib/supabase/client"
+import { useEffect } from "react"
 
 const steps = [
   { id: 1, title: "Personal Info", description: "Basic details" },
@@ -26,7 +28,32 @@ const steps = [
 export default function ApplyPage({ params }: { params: Promise<{ jobId: string }> }) {
   const resolvedParams = use(params)
   const router = useRouter()
-  const job = mockJobs.find((j) => j.id === resolvedParams.jobId)
+  // const job = mockJobs.find((j) => j.id === resolvedParams.jobId)
+  const [job, setJob] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+  const jobId = resolvedParams.jobId
+
+  useEffect(() => {
+    async function fetchJob() {
+      try {
+        const { data, error } = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('id', jobId)
+          .single()
+        
+        if (error) throw error
+        setJob(data)
+      } catch (error) {
+        console.error('Error fetching job:', error)
+        toast.error("Failed to load job details")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchJob()
+  }, [jobId])
 
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -86,11 +113,96 @@ export default function ApplyPage({ params }: { params: Promise<{ jobId: string 
   }
 
   const handleSubmit = async () => {
-    setIsSubmitting(true)
-    // Simulate payment and submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    toast.success("Application submitted successfully!")
-    router.push("/applicant/dashboard")
+    try {
+      setIsSubmitting(true)
+      
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        toast.error("Please login to apply")
+        router.push(`/login?redirect=/apply/${jobId}`)
+        return
+      }
+
+      // Helper for file upload
+      const uploadFile = async (file: File, path: string) => {
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${path}.${fileExt}`
+        const { error: uploadError } = await supabase.storage
+          .from('documents') // Ensure this bucket exists
+          .upload(fileName, file, { upsert: true })
+
+        if (uploadError) throw uploadError
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('documents')
+          .getPublicUrl(fileName)
+          
+        return publicUrl
+      }
+
+      // Upload files
+      let resumeUrl = null
+      let photoUrl = null
+      let signatureUrl = null
+
+      if (documents.cv) {
+        resumeUrl = await uploadFile(documents.cv, `${user.id}/${jobId}/cv`)
+      }
+      if (documents.photo) {
+        photoUrl = await uploadFile(documents.photo, `${user.id}/${jobId}/photo`)
+      }
+      if (documents.signature) {
+        signatureUrl = await uploadFile(documents.signature, `${user.id}/${jobId}/signature`)
+      }
+
+      // Prepare payload
+      const nameParts = personalInfo.fullName.trim().split(' ')
+      const firstName = nameParts[0]
+      const lastName = nameParts.slice(1).join(' ') || firstName // Fallback
+
+      const applicationData = {
+        job_id: jobId,
+        applicant_id: user.id,
+        first_name: firstName,
+        last_name: lastName,
+        email: personalInfo.email,
+        phone: personalInfo.phone,
+        date_of_birth: personalInfo.dob || null,
+        gender: personalInfo.gender,
+        address: personalInfo.address,
+        city: personalInfo.city,
+        state: personalInfo.state,
+        pincode: personalInfo.pincode,
+        education: education,
+        publications: research,
+        resume_url: resumeUrl,
+        certificates_url: [photoUrl, signatureUrl].filter(Boolean) as string[],
+        status: 'pending'
+      }
+
+      const { error } = await supabase
+        .from('applications')
+        .insert(applicationData)
+
+      if (error) throw error
+
+      toast.success("Application submitted successfully!")
+      router.push("/applicant/dashboard")
+    
+    } catch (error: any) {
+      console.error('Submission error:', error)
+      toast.error(error.message || "Failed to submit application")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    )
   }
 
   if (!job) {
