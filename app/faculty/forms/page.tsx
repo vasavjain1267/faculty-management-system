@@ -20,7 +20,20 @@ export default function FacultyFormsPage() {
     title: "Undertaking for NOC for Passport",
     description: "Fill undertaking details and export as PDF.",
     href: "/faculty/forms/undertaking-noc-passport",
-    }
+    },
+
+    {
+    title: "LTC Office Memorandum",
+    description: "Fill LTC details and export the office memorandum as PDF.",
+    href: "/faculty/forms/ltc-office-memorandum",
+  },
+
+  {
+    title: "Address Proof Certificate",
+    description: "Generate bilingual (Hindi & English) address proof certificate.",
+    href: "/faculty/forms/address-proof",
+  }
+
   ]
 
   return (
