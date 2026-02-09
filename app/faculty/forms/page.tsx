@@ -32,7 +32,13 @@ export default function FacultyFormsPage() {
     title: "Address Proof Certificate",
     description: "Generate bilingual (Hindi & English) address proof certificate.",
     href: "/faculty/forms/address-proof",
+  },
+  {
+    title: "Service Certificate (KV School)",
+    description: "Generate bilingual Hindi & English service certificate for KV admission.",
+    href: "/faculty/forms/service-certificate-kv",
   }
+
   ]
 
   return (

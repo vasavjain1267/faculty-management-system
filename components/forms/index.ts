@@ -5,6 +5,7 @@ import { rdRequestTemplate } from "./templates/rd-request"
 import { undertakingNocPassportTemplate } from "./templates/undertaking-noc-passport"
 import { ltcOfficeMemorandumTemplate } from "./templates/ltc-office-memorandum"
 import { addressProofTemplate } from "./templates/address-proof"
+import { serviceCertificateKVTemplate } from "./templates/service-certificate-kv"
 
 export const formTemplates = {
   bonafide: bonafideTemplate,
@@ -12,5 +13,6 @@ export const formTemplates = {
  "undertaking-noc-passport": undertakingNocPassportTemplate,
  "ltc-office-memorandum": ltcOfficeMemorandumTemplate,
  "address-proof": addressProofTemplate,
+ "service-certificate-kv": serviceCertificateKVTemplate,
 }
 
