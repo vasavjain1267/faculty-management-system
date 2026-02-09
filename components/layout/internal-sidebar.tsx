@@ -24,6 +24,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { FileText } from "lucide-react"
 
 interface SidebarProps {
   role: "faculty" | "admin"
@@ -34,7 +35,9 @@ const facultyLinks = [
   { href: "/faculty/profile", label: "My Profile", icon: User },
   { href: "/faculty/leaves", label: "Leave Management", icon: Calendar },
   { href: "/faculty/payroll", label: "Payroll", icon: DollarSign },
+  { href: "/faculty/forms", label: "Forms", icon: FileText },
   { href: "/faculty/settings", label: "Settings", icon: Settings },
+  
 ]
 
 const adminLinks = [
