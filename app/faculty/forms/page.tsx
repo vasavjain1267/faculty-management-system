@@ -11,12 +11,6 @@ export default function FacultyFormsPage() {
     },
 
     {
-    title: "R&D Request Form (R-15)",
-    description: "Fill the PI/Student request form and export as PDF.",
-    href: "/faculty/forms/rd-request",
-    },
-
-    {
     title: "Undertaking for NOC for Passport",
     description: "Fill undertaking details and export as PDF.",
     href: "/faculty/forms/undertaking-noc-passport",
@@ -32,6 +26,31 @@ export default function FacultyFormsPage() {
     title: "Address Proof Certificate",
     description: "Generate bilingual (Hindi & English) address proof certificate.",
     href: "/faculty/forms/address-proof",
+  },
+  {
+    title: "Service Certificate (KV School)",
+    description: "Generate bilingual Hindi & English service certificate for KV admission.",
+    href: "/faculty/forms/service-certificate-kv",
+  },
+  {
+    title: "Annexure-A (Passport)",
+    description: "Generate Identity Certificate (Annexure-A) for Passport application.",
+    href: "/faculty/forms/annexure-a-passport",
+  },
+  {
+    title: "Annexure-G NOC for Passport Renewal",
+    description: "Generate No Objection Certificate for passport renewal.",
+    href: "/faculty/forms/annexure-g-noc-passport",
+  },
+  {
+    title: "NOC for VISA",
+    description: "Generate No Objection Certificate for international travel and visa applications.",
+    href: "/faculty/forms/noc-visa",
+  },
+  {
+    title: "Annexure 'H' - Prior Intimation for Passport",
+    description: "Generate prior intimation letter for passport application submission to administrative office.",
+    href: "/faculty/forms/annexure-h-passport",
   }
 
   ]

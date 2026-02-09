@@ -11,12 +11,14 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import SignaturePad from "@/components/forms/SignaturePad"
 
-// ======================================================
-// TYPES (fixes your TS errors)
-// ======================================================
-type FieldType = "text" | "textarea" | "date" | "signature"
+import SignaturePad from "@/components/forms/SignaturePad"
+import PhotoUpload from "@/components/forms/PhotoUpload"
+
+/* ======================================================
+   TYPES
+   ====================================================== */
+type FieldType = "text" | "textarea" | "date" | "signature" | "photo"
 
 type FormField = {
   name: string
@@ -40,7 +42,6 @@ export default function DynamicTemplatePage() {
   const params = useParams()
   const templateId = params.template as string
 
-  // 🔥 Important: force correct typing here
   const template = (formTemplates as Record<string, FormTemplate>)[templateId]
 
   if (!template) {
@@ -56,9 +57,9 @@ export default function DynamicTemplatePage() {
 
   const PdfComponent = template.pdf
 
-  // ======================================================
-  // INITIAL FORM STATE
-  // ======================================================
+  /* ======================================================
+     INITIAL STATE
+     ====================================================== */
   const initialState = useMemo(() => {
     const obj: Record<string, string> = {}
     template.fields.forEach((f) => {
@@ -68,22 +69,6 @@ export default function DynamicTemplatePage() {
   }, [template.fields])
 
   const [formData, setFormData] = useState<Record<string, string>>(initialState)
-
-  // ======================================================
-  // SIGNATURE UPLOAD
-  // ======================================================
-  const handleSignatureUpload = (file: File, fieldName: string) => {
-    const reader = new FileReader()
-
-    reader.onload = () => {
-      setFormData((prev) => ({
-        ...prev,
-        [fieldName]: reader.result as string, // base64 dataURL
-      }))
-    }
-
-    reader.readAsDataURL(file)
-  }
 
   return (
     <div className="p-6 space-y-6">
@@ -95,36 +80,53 @@ export default function DynamicTemplatePage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* LEFT: FORM */}
+        {/* ================= FORM ================= */}
         <Card>
           <CardHeader>
             <CardTitle>Form Details</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {template.fields.map((field: FormField) => {
+            {template.fields.map((field) => {
               const type = field.type || "text"
 
-              // ✅ Signature upload
+              /* ===== PHOTO UPLOAD ===== */
+              if (type === "photo") {
+                return (
+                  <div key={field.name} className="space-y-2">
+                    <Label>{field.label}</Label>
+                    <PhotoUpload
+                      value={formData[field.name]}
+                      onChange={(base64) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          [field.name]: base64,
+                        }))
+                      }
+                    />
+                  </div>
+                )
+              }
+
+              /* ===== SIGNATURE PAD ===== */
               if (type === "signature") {
                 return (
-                    <div key={field.name} className="space-y-2">
+                  <div key={field.name} className="space-y-2">
                     <Label>{field.label}</Label>
-
                     <SignaturePad
-                        value={formData[field.name]}
-                        onChange={(base64) =>
+                      value={formData[field.name]}
+                      onChange={(base64) =>
                         setFormData((prev) => ({
-                            ...prev,
-                            [field.name]: base64,
+                          ...prev,
+                          [field.name]: base64,
                         }))
-                        }
+                      }
                     />
-                    </div>
+                  </div>
                 )
-                }
+              }
 
-              // ✅ textarea
+              /* ===== TEXTAREA ===== */
               if (type === "textarea") {
                 return (
                   <div key={field.name} className="space-y-2">
@@ -137,13 +139,12 @@ export default function DynamicTemplatePage() {
                           [field.name]: e.target.value,
                         }))
                       }
-                      placeholder={field.placeholder || `Enter ${field.label}`}
                     />
                   </div>
                 )
               }
 
-              // ✅ date
+              /* ===== DATE ===== */
               if (type === "date") {
                 return (
                   <div key={field.name} className="space-y-2">
@@ -162,7 +163,7 @@ export default function DynamicTemplatePage() {
                 )
               }
 
-              // ✅ normal text input
+              /* ===== TEXT ===== */
               return (
                 <div key={field.name} className="space-y-2">
                   <Label>{field.label}</Label>
@@ -174,13 +175,11 @@ export default function DynamicTemplatePage() {
                         [field.name]: e.target.value,
                       }))
                     }
-                    placeholder={field.placeholder || `Enter ${field.label}`}
                   />
                 </div>
               )
             })}
 
-            {/* Template-specific action */}
             {template.actions?.sendToAdmin && (
               <Button variant="outline" className="w-full">
                 Send to Admin (next step)
@@ -190,14 +189,14 @@ export default function DynamicTemplatePage() {
             <PDFDownloadLink
               document={<PdfComponent data={formData} />}
               fileName={`${template.id}.pdf`}
-              className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
             >
               {({ loading }) => (loading ? "Preparing PDF..." : "Download PDF")}
             </PDFDownloadLink>
           </CardContent>
         </Card>
 
-        {/* RIGHT: PDF PREVIEW */}
+        {/* ================= PREVIEW ================= */}
         <Card>
           <CardHeader>
             <CardTitle>PDF Preview</CardTitle>
