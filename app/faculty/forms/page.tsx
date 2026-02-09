@@ -33,7 +33,6 @@ export default function FacultyFormsPage() {
     description: "Generate bilingual (Hindi & English) address proof certificate.",
     href: "/faculty/forms/address-proof",
   }
-
   ]
 
   return (

@@ -1,10 +1,29 @@
 import React from "react"
-import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer"
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Font,
+} from "@react-pdf/renderer"
+
+/* ======================================================
+   FONT REGISTRATION (REQUIRED FOR HINDI)
+   ====================================================== */
+Font.register({
+  family: "NotoDevanagari",
+  src: "/fonts/NotoSansDevanagari-Regular.ttf",
+})
 
 type Props = {
   data: Record<string, string>
 }
 
+/* ======================================================
+   STYLES
+   ====================================================== */
 const styles = StyleSheet.create({
   page: {
     paddingTop: 40,
@@ -28,9 +47,14 @@ const styles = StyleSheet.create({
     textDecoration: "underline",
   },
 
-  para: {
-    marginBottom: 10,
-    textAlign: "justify",
+  hindi: {
+    fontFamily: "NotoDevanagari",
+    fontSize: 11,
+    lineHeight: 1.6,
+  },
+
+  english: {
+    fontFamily: "Helvetica",
   },
 
   label: {
@@ -61,6 +85,9 @@ const styles = StyleSheet.create({
   },
 })
 
+/* ======================================================
+   COMPONENT
+   ====================================================== */
 export default function AddressProofPDF({ data }: Props) {
   const {
     facultyName = "",
@@ -81,66 +108,84 @@ export default function AddressProofPDF({ data }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* HEADER */}
+        {/* ================= HEADER ================= */}
         <View style={styles.header}>
-          <Text style={{ fontWeight: "bold" }}>
-            संकाय कार्य कार्यालय (OFFICE OF FACULTY AFFAIRS)
+          <Text style={[styles.hindi, { fontWeight: "bold" }]}>
+            संकाय कार्य कार्यालय
           </Text>
-          <Text>Indian Institute of Technology Indore</Text>
+          <Text style={styles.english}>
+            (OFFICE OF FACULTY AFFAIRS)
+          </Text>
+          <Text style={styles.english}>
+            Indian Institute of Technology Indore
+          </Text>
         </View>
 
         <Text style={styles.title}>ADDRESS PROOF CERTIFICATE</Text>
 
-        {/* HINDI */}
-        <Text style={styles.para}>
-          यह प्रमाणित किया जाता है कि {facultyName}, दिनांक {dateOfJoining} को भारतीय
-          प्रौद्योगिकी संस्थान इंदौर के {department} विभाग में {designation} के पद पर
-          कार्यरत हुए तथा वर्तमान में {currentDesignation} के पद पर दिनांक{" "}
-          {currentDesignationDate} से कार्यरत हैं।
+        {/* ================= HINDI SECTION ================= */}
+        <Text style={styles.hindi}>
+          यह प्रमाणित किया जाता है कि {facultyName}, दिनांक {dateOfJoining} को
+          भारतीय प्रौद्योगिकी संस्थान इंदौर के {department} विभाग में
+          {designation} के पद पर कार्यरत हुए तथा वर्तमान में
+          {currentDesignation} के पद पर दिनांक {currentDesignationDate} से
+          कार्यरत हैं।
         </Text>
 
-        <Text style={styles.para}>
-          यह भी प्रमाणित किया जाता है कि {dependentName}, {facultyName} की {relationship} हैं।
+        <Text style={[styles.hindi, { marginTop: 6 }]}>
+          यह भी प्रमाणित किया जाता है कि {dependentName}, {facultyName} की{" "}
+          {relationship} हैं।
         </Text>
 
-        <Text style={styles.label}>संस्थान के अभिलेखानुसार आवासीय पता:</Text>
+        <Text style={[styles.hindi, styles.label, { marginTop: 8 }]}>
+          संस्थान के अभिलेखानुसार आवासीय पता:
+        </Text>
+
         <View style={styles.box}>
-          <Text>{addressHindi}</Text>
+          <Text style={styles.hindi}>{addressHindi}</Text>
         </View>
 
-        {/* ENGLISH */}
-        <Text style={styles.para}>
-          This is to certify that {facultyName} joined Indian Institute of Technology
-          Indore on {dateOfJoining} as {designation} in the Department of {department}
-          and is presently working as {currentDesignation} w.e.f.{" "}
-          {currentDesignationDate}.
+        {/* ================= ENGLISH SECTION ================= */}
+        <Text style={[styles.english, { marginTop: 10 }]}>
+          This is to certify that {facultyName} joined Indian Institute of
+          Technology Indore on {dateOfJoining} as {designation} in the
+          Department of {department} and is presently working as{" "}
+          {currentDesignation} w.e.f. {currentDesignationDate}.
         </Text>
 
-        <Text style={styles.para}>
+        <Text style={[styles.english, { marginTop: 6 }]}>
           It is also certified that {dependentName} is the {relationship} of{" "}
           {facultyName}.
         </Text>
 
-        <Text style={styles.label}>Residential Address as per Institute records:</Text>
+        <Text style={[styles.english, styles.label, { marginTop: 8 }]}>
+          Residential Address as per Institute records:
+        </Text>
+
         <View style={styles.box}>
-          <Text>{addressEnglish}</Text>
+          <Text style={styles.english}>{addressEnglish}</Text>
         </View>
 
-        <Text style={styles.para}>
-          This certificate is issued to {facultyName} for the purpose of {reason}.
+        <Text style={[styles.english, { marginTop: 8 }]}>
+          This certificate is issued to {facultyName} for the purpose of{" "}
+          {reason}.
         </Text>
 
-        <Text style={styles.para}>
-          This Address Proof Certificate is published in English and Hindi languages.
-          In case of any discrepancy, the English version shall prevail.
+        <Text style={[styles.english, { marginTop: 6 }]}>
+          This Address Proof Certificate is published in English and Hindi
+          languages. In case of any discrepancy, the English version shall
+          prevail.
         </Text>
 
-        {/* SIGNATURE */}
+        {/* ================= SIGNATURE ================= */}
         <View style={styles.row}>
           <View style={styles.field}>
             <Text style={styles.label}>Signature:</Text>
             {signature ? (
-              <Image src={signature} style={{ marginTop: 8, width: 120, height: 40 }} />
+              <Image
+                src={signature}
+                style={{ marginTop: 8, width: 120, height: 40 }}
+              />
             ) : (
               <View style={styles.line} />
             )}
