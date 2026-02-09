@@ -6,6 +6,7 @@ import { undertakingNocPassportTemplate } from "./templates/undertaking-noc-pass
 import { ltcOfficeMemorandumTemplate } from "./templates/ltc-office-memorandum"
 import { addressProofTemplate } from "./templates/address-proof"
 import { serviceCertificateKVTemplate } from "./templates/service-certificate-kv"
+import { annexureAPassportTemplate } from "./templates/annexure-a-passport"
 
 export const formTemplates = {
   bonafide: bonafideTemplate,
@@ -14,5 +15,6 @@ export const formTemplates = {
  "ltc-office-memorandum": ltcOfficeMemorandumTemplate,
  "address-proof": addressProofTemplate,
  "service-certificate-kv": serviceCertificateKVTemplate,
+ "annexure-a-passport": annexureAPassportTemplate,
 }
 

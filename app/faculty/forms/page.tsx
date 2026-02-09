@@ -37,7 +37,13 @@ export default function FacultyFormsPage() {
     title: "Service Certificate (KV School)",
     description: "Generate bilingual Hindi & English service certificate for KV admission.",
     href: "/faculty/forms/service-certificate-kv",
+  },
+  {
+    title: "Annexure-A (Passport)",
+    description: "Generate Identity Certificate (Annexure-A) for Passport application.",
+    href: "/faculty/forms/annexure-a-passport",
   }
+
 
   ]
 
