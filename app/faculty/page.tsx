@@ -1,24 +1,68 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Calendar, Clock, Award, Briefcase, ChevronRight, FileText } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { mockFaculty, mockNotices, mockLeaveRequests } from "@/lib/mock-data"
+import { mockNotices, mockLeaveRequests } from "@/lib/mock-data"
 import { StatusBadge } from "@/components/ui/status-badge"
+import { Spinner } from "@/components/ui/spinner"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase/client"
 
 export default function FacultyDashboard() {
-  const faculty = mockFaculty
+  const supabase = createClient()
+  const [faculty, setFaculty] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+
+        setFaculty(profile)
+      } catch (error) {
+        console.error('Error loading profile:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProfile()
+  }, [supabase])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Spinner className="h-8 w-8" />
+      </div>
+    )
+  }
+
+  if (!faculty) {
+    return (
+      <div className="p-6">
+        <p className="text-muted-foreground">Please complete your profile first.</p>
+      </div>
+    )
+  }
+
   const myLeaves = mockLeaveRequests.filter((l) => l.facultyId === faculty.id)
 
   // Calculate service years
-  const joiningDate = new Date(faculty.joiningDate)
+  const joiningDate = faculty.doj ? new Date(faculty.doj) : new Date()
   const serviceYears = Math.floor((Date.now() - joiningDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000))
 
   const stats = [
     {
       label: "Casual Leave Balance",
-      value: faculty.leaveBalance.casual,
+      value: faculty.casual_leave_balance || 0,
       suffix: "days",
       icon: Calendar,
       color: "text-primary",
@@ -50,9 +94,9 @@ export default function FacultyDashboard() {
     <div className="space-y-6">
       {/* Welcome Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Welcome back, {faculty.name}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Welcome back, {faculty.full_name}</h1>
         <p className="text-muted-foreground">
-          {faculty.designation} • {faculty.department}
+          {faculty.present_designation || faculty.designation_at_joining} • {faculty.department}
         </p>
       </div>
 
