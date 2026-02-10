@@ -1,11 +1,17 @@
-export type FieldType = "text" | "textarea" | "date" | "signature" | "photo" | "select"
+// components/forms/types.ts
+
+import type React from "react"
 
 export type FormField = {
   name: string
   label: string
-  type?: FieldType
+  type?: "text" | "textarea" | "date" | "signature"
   placeholder?: string
-  options?: string[]
+}
+
+export type TemplateActions = {
+  sendToAdmin?: boolean
+  needsApproval?: boolean
 }
 
 export type FormTemplate = {
@@ -13,8 +19,5 @@ export type FormTemplate = {
   title: string
   pdf: React.ComponentType<{ data: Record<string, string> }>
   fields: FormField[]
-  actions?: {
-    sendToAdmin?: boolean
-    needsApproval?: boolean
-  }
+  actions?: TemplateActions
 }

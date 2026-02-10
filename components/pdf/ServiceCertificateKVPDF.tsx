@@ -6,7 +6,16 @@ import {
   View,
   StyleSheet,
   Image,
+  Font,
 } from "@react-pdf/renderer"
+
+/* ======================================================
+   FONT REGISTRATION (REQUIRED FOR HINDI)
+   ====================================================== */
+Font.register({
+  family: "NotoDevanagari",
+  src: "/fonts/NotoSansDevanagari-Regular.ttf",
+})
 
 type Props = {
   data: Record<string, string>
@@ -36,6 +45,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 16,
     textDecoration: "underline",
+  },
+
+  hindi: {
+    fontFamily: "NotoDevanagari",
+    fontSize: 11,
+    lineHeight: 1.6,
   },
 
   english: {
@@ -75,7 +90,7 @@ export default function ServiceCertificateKVPDF({ data }: Props) {
     facultyName = "",
     joiningDate = "",
     department = "",
-    applicantName = "",
+    employeeName = "",
     childName = "",
     issueDate = "",
     signature = "",
@@ -86,16 +101,62 @@ export default function ServiceCertificateKVPDF({ data }: Props) {
       <Page size="A4" style={styles.page}>
         {/* ================= HEADER ================= */}
         <View style={styles.header}>
-          <Text style={[styles.english, { fontWeight: "bold" }]}>
-            OFFICE OF FACULTY AFFAIRS
+          <Text style={[styles.hindi, { fontWeight: "bold" }]}>
+            संकाय कार्य कार्यालय
           </Text>
+          <Text style={styles.english}>(OFFICE OF FACULTY AFFAIRS)</Text>
           <Text style={styles.english}>
             Indian Institute of Technology Indore
           </Text>
         </View>
 
         {/* ================= TITLE ================= */}
-        <Text style={styles.title}>SERVICE CERTIFICATE</Text>
+        <View style={{ marginVertical: 16, alignItems: "center" }}>
+        {/* Hindi title */}
+        <Text
+            style={[
+            styles.hindi,
+            { fontSize: 12, fontWeight: "bold" },
+            ]}
+        >
+            सेवा प्रमाण पत्र
+        </Text>
+
+        {/* English title */}
+        <Text
+            style={[
+            styles.english,
+            {
+                fontSize: 12,
+                fontWeight: "bold",
+                textDecoration: "underline",
+                marginTop: 2,
+            },
+            ]}
+        >
+            Service Certificate
+        </Text>
+        </View>
+
+
+        {/* ================= HINDI ================= */}
+        <Text style={styles.hindi}>
+          यह प्रमाणित किया जाता है कि डॉ. {facultyName}, दिनांक {joiningDate} को
+          भारतीय प्रौद्योगिकी संस्थान इंदौर के {department} विभाग में असिस्टेंट
+          प्रोफेसर के पद पर कार्यरत हुए।
+        </Text>
+
+        <Text style={[styles.hindi, { marginTop: 6 }]}>
+          वह भारत सरकार के शिक्षा मंत्रालय के तहत स्वायत्त निकाय के नियमित कर्मचारी
+          हैं तथा उनकी सेवाएं अस्थानांतरणीय हैं।
+        </Text>
+
+        <Text style={[styles.hindi, { marginTop: 6 }]}>
+          यह प्रमाण पत्र {employeeName} को उनके पुत्र {childName} के पीएम श्री
+          केन्द्रीय विद्यालय आईआईटी इंदौर में प्रवेश हेतु जारी किया जाता है।
+        </Text>
+
+        {/* ================= ENGLISH ================= */}
         <Text style={[styles.english, { marginTop: 12 }]}>
           This is to certify that Dr. {facultyName} joined Indian Institute of
           Technology Indore on {joiningDate} as an Assistant Professor in the
@@ -108,7 +169,7 @@ export default function ServiceCertificateKVPDF({ data }: Props) {
         </Text>
 
         <Text style={[styles.english, { marginTop: 6 }]}>
-          This certificate is issued to {applicantName} for his son {childName}'s
+          This certificate is issued to {employeeName} for his son {childName}'s
           admission in PM Shri Kendriya Vidyalaya IIT Indore.
         </Text>
 

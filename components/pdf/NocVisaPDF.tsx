@@ -91,7 +91,7 @@ export default function NocVisaPDF({ data }: Props) {
   const {
     refNumber = "IITI/FA/PT/34/2026/",
     issueDate = "",
-    applicantName = "",
+    employeeName = "",
     gender = "she",
     dateOfJoining = "",
     entryDesignation = "Assistant Professor",

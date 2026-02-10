@@ -8,21 +8,21 @@ export const ltcOfficeMemorandumTemplate: FormTemplate = {
   pdf: LtcOfficeMemorandumPDF,
 
   fields: [
-    { name: "facultyName", label: "Faculty Name (Primary Applicant)" },
-    { name: "designation", label: "Designation (Faculty)" },
-    { name: "department", label: "Department (Faculty)" },
+    { name: "facultyName", label: "Faculty Name" },
+    { name: "designation", label: "Designation" },
+    { name: "department", label: "Department" },
 
     { name: "hometown", label: "Hometown / Destination" },
     { name: "blockYear", label: "LTC Block Year" },
 
-    { name: "journeyDetails", label: "Journey Details (Include all travelers: Name, Age, Relation, Dates)", type: "textarea", placeholder: "List faculty and all dependents traveling" },
+    { name: "journeyDetails", label: "Journey Details (Name, Age, Relation, Dates)", type: "textarea" },
 
     { name: "leaveDetails", label: "Details of Leave during LTC", type: "textarea" },
 
     { name: "advanceRequested", label: "Advance Requested (₹)" },
     { name: "advanceAdmissible", label: "Advance Admissible (₹)" },
 
-    { name: "basicPay", label: "Basic Pay with Cell & Pay Level (Faculty)" },
+    { name: "basicPay", label: "Basic Pay with Cell & Pay Level" },
 
     { name: "encashment", label: "Encashment of 10 Days EL (Yes / No)" },
 

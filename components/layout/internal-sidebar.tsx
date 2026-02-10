@@ -26,6 +26,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { FileText } from "lucide-react"
 
 interface SidebarProps {
   role: "faculty" | "admin"

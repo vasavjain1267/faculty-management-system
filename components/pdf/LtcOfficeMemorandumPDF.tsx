@@ -1,5 +1,5 @@
 import React from "react"
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer"
+import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer"
 
 type Props = {
   data: Record<string, string>
@@ -12,21 +12,53 @@ const styles = StyleSheet.create({
     paddingHorizontal: 45,
     fontSize: 11,
     fontFamily: "Helvetica",
-    lineHeight: 1.5,
+    lineHeight: 1.4,
   },
+
   header: {
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 18,
   },
+
   title: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 16,
+    marginVertical: 18,
+    textDecoration: "underline",
   },
+
   para: {
-    marginVertical: 8,
+    marginBottom: 10,
     textAlign: "justify",
+  },
+
+  label: {
+    fontWeight: "bold",
+  },
+
+  box: {
+    borderWidth: 1,
+    borderColor: "#000",
+    padding: 10,
+    marginTop: 6,
+    marginBottom: 10,
+  },
+
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+
+  field: {
+    width: "48%",
+  },
+
+  line: {
+    marginTop: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#000",
   },
 })
 
@@ -35,38 +67,85 @@ export default function LtcOfficeMemorandumPDF({ data }: Props) {
     facultyName = "",
     designation = "",
     department = "",
-    ltcType = "",
-    fromDate = "",
-    toDate = "",
-    destination = "",
-    advanceAmount = "",
-    issueDate = "",
+    hometown = "",
+    blockYear = "",
+    journeyDetails = "",
+    leaveDetails = "",
+    advanceRequested = "",
+    advanceAdmissible = "",
+    basicPay = "",
+    encashment = "",
+    signature = "",
+    date = "",
   } = data
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        {/* HEADER */}
         <View style={styles.header}>
-          <Text>OFFICE MEMORANDUM</Text>
-          <Text style={{ fontSize: 10 }}>Indian Institute of Technology Indore</Text>
+          <Text style={{ fontWeight: "bold" }}>OFFICE OF FACULTY AFFAIRS</Text>
+          <Text>Indian Institute of Technology Indore</Text>
         </View>
 
-        <Text style={styles.title}>Leave Travel Concession (LTC)</Text>
+        <Text style={styles.title}>OFFICE MEMORANDUM</Text>
 
-        <Text style={styles.para}>Date: {issueDate ? new Date(issueDate).toLocaleDateString() : ""}</Text>
-
+        {/* MAIN PARAGRAPH */}
         <Text style={styles.para}>
-          Permission is granted to {facultyName}, {designation}, {department}, to avail LTC for the period from{" "}
-          {fromDate ? new Date(fromDate).toLocaleDateString() : ""} to{" "}
-          {toDate ? new Date(toDate).toLocaleDateString() : ""}.
+          With reference to the request from <Text style={styles.label}>{facultyName}</Text>,{" "}
+          {designation}, Department of {department}, for sanction of LTC to hometown / destination{" "}
+          <Text style={styles.label}>{hometown}</Text> for the block year{" "}
+          <Text style={styles.label}>{blockYear}</Text>, the provisions of the same are approved as
+          per the following details:
         </Text>
 
-        <Text style={styles.para}>Destination: {destination}</Text>
-        <Text style={styles.para}>LTC Type: {ltcType}</Text>
-        {advanceAmount && <Text style={styles.para}>Advance Sanctioned: Rs. {advanceAmount}</Text>}
+        <Text style={styles.label}>Journey Details:</Text>
+        <View style={styles.box}>
+          <Text>{journeyDetails}</Text>
+        </View>
 
-        <Text style={{ marginTop: 40 }}>Authorized Signatory</Text>
-        <Text style={{ marginTop: 20 }}>_________________</Text>
+        <Text style={styles.label}>Leave Details during LTC:</Text>
+        <View style={styles.box}>
+          <Text>{leaveDetails}</Text>
+        </View>
+
+        <Text style={styles.para}>
+          <Text style={styles.label}>Advance Requested:</Text> ₹ {advanceRequested}
+        </Text>
+
+        <Text style={styles.para}>
+          <Text style={styles.label}>Advance Admissible:</Text> ₹ {advanceAdmissible}
+        </Text>
+
+        <Text style={styles.para}>
+          <Text style={styles.label}>Basic Pay:</Text> {basicPay}
+        </Text>
+
+        <Text style={styles.para}>
+          <Text style={styles.label}>Encashment of 10 Days EL:</Text> {encashment}
+        </Text>
+
+        {/* SIGNATURE */}
+        <View style={styles.row}>
+          <View style={styles.field}>
+            <Text style={styles.label}>Signature:</Text>
+            {signature ? (
+              <Image src={signature} style={{ marginTop: 8, width: 120, height: 40 }} />
+            ) : (
+              <View style={styles.line} />
+            )}
+          </View>
+
+          <View style={styles.field}>
+            <Text>
+              <Text style={styles.label}>Date:</Text> {date}
+            </Text>
+          </View>
+        </View>
+
+        <Text style={{ marginTop: 30, fontSize: 10 }}>
+          Assistant Registrar, Faculty Affairs
+        </Text>
       </Page>
     </Document>
   )

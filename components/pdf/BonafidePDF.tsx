@@ -8,7 +8,16 @@ import {
   View,
   StyleSheet,
   Image,
+  Font,
 } from "@react-pdf/renderer"
+
+/* ======================================================
+   FONT REGISTRATION (REQUIRED FOR HINDI)
+   ====================================================== */
+Font.register({
+  family: "NotoDevanagari",
+  src: "/fonts/NotoSansDevanagari-Regular.ttf",
+})
 
 type Props = {
   data: Record<string, string>
@@ -50,6 +59,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 16,
     textDecoration: "underline",
+  },
+
+  hindi: {
+    fontFamily: "NotoDevanagari",
+    fontSize: 11,
+    lineHeight: 1.6,
   },
 
   english: {
@@ -126,7 +141,7 @@ export default function BonafidePDF({ data }: Props) {
   const {
     refNumber = "IITI/FA/PT/8/2025/",
     issueDate = "",
-    applicantName = "",
+    employeeName = "",
     entryDesignation = "",
     currentDesignation = "",
     currentDesignationDate = "",
@@ -158,12 +173,20 @@ export default function BonafidePDF({ data }: Props) {
         </Text>
 
         {/* ================= TITLE ================= */}
-        <Text style={[styles.title, styles.english]}>
-          BONAFIDE CERTIFICATE
+        <Text style={[styles.title, styles.hindi]}>
+          बोनाफाईड प्रमाण पत्र
+        </Text>
+        <Text style={[styles.title, styles.english, { marginTop: -8 }]}>
+          (Bonafide Certificate)
         </Text>
 
-        {/* ================= INTRO ================= */}
-        <Text style={[styles.english, { marginTop: 12, marginBottom: 8 }]}>
+        {/* ================= INTRO (HINDI) ================= */}
+        <Text style={[styles.hindi, { marginTop: 12 }]}>
+          संस्थान से अधिकारी के संबंध में विवरण निम्नानुसार है:
+        </Text>
+
+        {/* ================= INTRO (ENGLISH) ================= */}
+        <Text style={[styles.english, { marginTop: 4, marginBottom: 8 }]}>
           The details with regards to the official from the Institute are as under:
         </Text>
 
@@ -172,17 +195,19 @@ export default function BonafidePDF({ data }: Props) {
           {/* Row 1 */}
           <View style={styles.tableRow}>
             <View style={[styles.tableCell, styles.tableCellBorder]}>
-              <Text style={styles.english}>(a) Name of Employee</Text>
+              <Text style={styles.hindi}>(a) कर्मचारी का नाम /</Text>
+              <Text style={styles.english}>Name of Employee</Text>
             </View>
             <View style={styles.tableCell}>
-              <Text>{applicantName}</Text>
+              <Text>{employeeName}</Text>
             </View>
           </View>
 
           {/* Row 2 */}
           <View style={styles.tableRow}>
             <View style={[styles.tableCell, styles.tableCellBorder]}>
-              <Text style={styles.english}>(b) Designation at Entry Level</Text>
+              <Text style={styles.hindi}>(b) प्रवेश स्तर पर पदनाम /</Text>
+              <Text style={styles.english}>Designation at Entry Level</Text>
             </View>
             <View style={styles.tableCell}>
               <Text>{entryDesignation}</Text>
@@ -192,7 +217,8 @@ export default function BonafidePDF({ data }: Props) {
           {/* Row 3 */}
           <View style={styles.tableRow}>
             <View style={[styles.tableCell, styles.tableCellBorder]}>
-              <Text style={styles.english}>(c) Present Designation with date</Text>
+              <Text style={styles.hindi}>(c) तारीख के साथ वर्तमान पदनाम /</Text>
+              <Text style={styles.english}>Present Designation with date</Text>
             </View>
             <View style={styles.tableCell}>
               <Text>
@@ -205,7 +231,8 @@ export default function BonafidePDF({ data }: Props) {
           {/* Row 4 */}
           <View style={styles.tableRowLast}>
             <View style={[styles.tableCell, styles.tableCellBorder]}>
-              <Text style={styles.english}>(d) Department</Text>
+              <Text style={styles.hindi}>(d) विभाग /</Text>
+              <Text style={styles.english}>Department</Text>
             </View>
             <View style={styles.tableCell}>
               <Text>{department}</Text>
@@ -213,14 +240,38 @@ export default function BonafidePDF({ data }: Props) {
           </View>
         </View>
 
-        {/* ================= PURPOSE ================= */}
-        <Text style={[styles.english, { marginTop: 12 }]}>
+        {/* ================= PURPOSE (HINDI) ================= */}
+        <Text style={[styles.hindi, { marginTop: 12 }]}>
+          यह प्रमाणपत्र {purpose ? purpose : "______"} के लिए जारी किया जाता है।
+        </Text>
+
+        {/* ================= PURPOSE (ENGLISH) ================= */}
+        <Text style={[styles.english, { marginTop: 8 }]}>
           This certificate is issued for {purpose ? purpose : "______"}.
         </Text>
 
-        {/* ================= REQUEST ================= */}
-        <Text style={[styles.english, { marginTop: 12 }]}>
-          This certificate is issued at the request of {requestedBy || applicantName}.
+        {/* ================= REQUEST (HINDI) ================= */}
+        <Text style={[styles.hindi, { marginTop: 12 }]}>
+          यह प्रमाणपत्र {requestedBy || employeeName} के अनुरोध पर जारी किया जाता है।
+        </Text>
+
+        {/* ================= REQUEST (ENGLISH) ================= */}
+        <Text style={[styles.english, { marginTop: 8 }]}>
+          This certificate is issued at the request of {requestedBy || employeeName}.
+        </Text>
+
+        {/* ================= DISCLAIMER (HINDI) ================= */}
+        <Text style={[styles.hindi, { marginTop: 12 }]}>
+          यह बोनाफाईड प्रमाणपत्र अंग्रेज़ी और हिंदी भाषाओं में प्रकाशित किया गया है। 
+          यद्यपि अंग्रेज़ी से हिंदी अनुवाद करते समय अत्यंत सावधानी बरती गई है, 
+          तथापि व्याख्या में किसी प्रकार की विसंगति के मामले में, अंग्रेज़ी संस्करण मान्य होगा।
+        </Text>
+
+        {/* ================= DISCLAIMER (ENGLISH) ================= */}
+        <Text style={[styles.english, { marginTop: 8 }]}>
+          This Bonafide Certificate is published in English and Hindi languages. 
+          Utmost care is taken to translate from English to Hindi. However, in case of 
+          any kind of discrepancy in interpretation, English version shall prevail.
         </Text>
 
         {/* ================= SIGNATURE ================= */}
@@ -250,7 +301,7 @@ export default function BonafidePDF({ data }: Props) {
 
         {/* ================= RECIPIENT ================= */}
         <View style={styles.recipient}>
-          <Text style={[styles.english, { marginBottom: 4 }]}>To,</Text>
+          <Text style={[styles.hindi, { marginBottom: 4 }]}>प्रति/To,</Text>
           <Text style={styles.english}>{recipientName || "Name"},</Text>
           <Text style={styles.english}>
             {recipientDesignation ? `${recipientDesignation}` : ""}

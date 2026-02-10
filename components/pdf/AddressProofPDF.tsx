@@ -6,7 +6,16 @@ import {
   View,
   StyleSheet,
   Image,
+  Font,
 } from "@react-pdf/renderer"
+
+/* ======================================================
+   FONT REGISTRATION (REQUIRED FOR HINDI)
+   ====================================================== */
+Font.register({
+  family: "NotoDevanagari",
+  src: "/fonts/NotoSansDevanagari-Regular.ttf",
+})
 
 type Props = {
   data: Record<string, string>
@@ -36,6 +45,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 16,
     textDecoration: "underline",
+  },
+
+  hindi: {
+    fontFamily: "NotoDevanagari",
+    fontSize: 11,
+    lineHeight: 1.6,
   },
 
   english: {
@@ -95,8 +110,11 @@ export default function AddressProofPDF({ data }: Props) {
       <Page size="A4" style={styles.page}>
         {/* ================= HEADER ================= */}
         <View style={styles.header}>
-          <Text style={[styles.english, { fontWeight: "bold" }]}>
-            OFFICE OF FACULTY AFFAIRS
+          <Text style={[styles.hindi, { fontWeight: "bold" }]}>
+            संकाय कार्य कार्यालय
+          </Text>
+          <Text style={styles.english}>
+            (OFFICE OF FACULTY AFFAIRS)
           </Text>
           <Text style={styles.english}>
             Indian Institute of Technology Indore
@@ -104,6 +122,30 @@ export default function AddressProofPDF({ data }: Props) {
         </View>
 
         <Text style={styles.title}>ADDRESS PROOF CERTIFICATE</Text>
+
+        {/* ================= HINDI SECTION ================= */}
+        <Text style={styles.hindi}>
+          यह प्रमाणित किया जाता है कि {facultyName}, दिनांक {dateOfJoining} को
+          भारतीय प्रौद्योगिकी संस्थान इंदौर के {department} विभाग में
+          {designation} के पद पर कार्यरत हुए तथा वर्तमान में
+          {currentDesignation} के पद पर दिनांक {currentDesignationDate} से
+          कार्यरत हैं।
+        </Text>
+
+        <Text style={[styles.hindi, { marginTop: 6 }]}>
+          यह भी प्रमाणित किया जाता है कि {dependentName}, {facultyName} की{" "}
+          {relationship} हैं।
+        </Text>
+
+        <Text style={[styles.hindi, styles.label, { marginTop: 8 }]}>
+          संस्थान के अभिलेखानुसार आवासीय पता:
+        </Text>
+
+        <View style={styles.box}>
+          <Text style={styles.hindi}>{addressHindi}</Text>
+        </View>
+
+        {/* ================= ENGLISH SECTION ================= */}
         <Text style={[styles.english, { marginTop: 10 }]}>
           This is to certify that {facultyName} joined Indian Institute of
           Technology Indore on {dateOfJoining} as {designation} in the

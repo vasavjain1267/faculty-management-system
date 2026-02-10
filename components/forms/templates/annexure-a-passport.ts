@@ -9,21 +9,21 @@ export const annexureAPassportTemplate: FormTemplate = {
 
   fields: [
     { name: "facultyName", label: "Faculty Name" },
-    { name: "applicantName", label: "Applicant Name (Faculty/Dependent)" },
-    { name: "fatherName", label: "Father's/Spouse's Name (of Applicant)" },
-    { name: "doj", label: "Date of Joining (Faculty)", type: "date" },
-    { name: "department", label: "Department (Faculty)" },
+    { name: "fatherName", label: "Father's Name" },
+    { name: "doj", label: "Date of Joining", type: "date" },
+    { name: "department", label: "Department" },
 
-    { name: "currentDesignation", label: "Current Designation (Faculty)" },
+    { name: "currentDesignation", label: "Current Designation" },
     { name: "currentDesignationDate", label: "Designation Since", type: "date" },
 
+    { name: "dependentName", label: "Dependent / Spouse Name" },
     { name: "idCardNumber", label: "Faculty ID Card Number" },
 
     { name: "refNo", label: "Reference Number" },
     { name: "issueDate", label: "Issue Date", type: "date" },
 
-    { name: "applicantPhoto", label: "Applicant's Photo", type: "photo" },
-    { name: "signature", label: "Applicant's Digital Signature", type: "signature" },
+    { name: "applicantPhoto", label: "Applicant Photo", type: "photo" },
+    { name: "signature", label: "Digital Signature", type: "signature" },
   ],
 
   actions: {

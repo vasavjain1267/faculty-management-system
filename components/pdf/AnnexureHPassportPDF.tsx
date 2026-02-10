@@ -135,7 +135,7 @@ export default function AnnexureHPassportPDF({ data }: Props) {
     place = "",
     date = "",
     passportOffice = "Bhopal",
-    applicantName = "",
+    employeeName = "",
     dateOfBirth = "",
     designation = "",
     officeWorking = "",
@@ -245,7 +245,7 @@ export default function AnnexureHPassportPDF({ data }: Props) {
             {/* Employee Name */}
             <View style={styles.signatureBox}>
               <Text style={styles.label}>Name:</Text>
-              <Text style={{ marginTop: 4 }}>{applicantName}</Text>
+              <Text style={{ marginTop: 4 }}>{employeeName}</Text>
             </View>
           </View>
         </View>

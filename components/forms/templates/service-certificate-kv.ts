@@ -10,14 +10,15 @@ export const serviceCertificateKVTemplate: FormTemplate = {
   pdf: ServiceCertificateKVPDF,
 
   fields: [
-    { name: "facultyName", label: "Faculty Name (Parent/Guardian)" },
-    { name: "joiningDate", label: "Joining Date (Faculty)" },
-    { name: "department", label: "Department (Faculty)" },
-    { name: "childName", label: "Child's Name (Student)" },
+    { name: "facultyName", label: "Faculty Name" },
+    { name: "joiningDate", label: "Joining Date" },
+    { name: "department", label: "Department" },
+    { name: "employeeName", label: "Employee Name (for whom certificate is issued)" },
+    { name: "childName", label: "Child Name" },
 
     { name: "issueDate", label: "Issue Date", type: "date" },
 
-    { name: "signature", label: "Faculty Signature", type: "signature" },
+    { name: "signature", label: "Digital Signature", type: "signature" },
   ],
 
   actions: {

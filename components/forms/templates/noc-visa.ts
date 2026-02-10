@@ -12,21 +12,20 @@ export const nocVisaTemplate: FormTemplate = {
   fields: [
     { name: "refNumber", label: "Reference Number", placeholder: "IITI/FA/PT/34/2026/" },
     { name: "issueDate", label: "Issue Date", type: "date" },
-    { name: "applicantName", label: "Applicant Name (Traveler)" },
-    { name: "facultyName", label: "Faculty Name (If applying for dependent)" },
-    { name: "gender", label: "Gender (Applicant)", placeholder: "Male/Female/Other" },
-    { name: "dateOfJoining", label: "Date of Joining (Faculty)", type: "date" },
-    { name: "entryDesignation", label: "Designation at Entry (Faculty)", placeholder: "Assistant Professor" },
-    { name: "department", label: "Department (Faculty)" },
-    { name: "currentDesignation", label: "Current Designation (Faculty)", placeholder: "Professor" },
+    { name: "employeeName", label: "Employee Name" },
+    { name: "gender", label: "Gender (he/she/they)", placeholder: "she" },
+    { name: "dateOfJoining", label: "Date of Joining", type: "date" },
+    { name: "entryDesignation", label: "Designation at Entry Level", placeholder: "Assistant Professor" },
+    { name: "department", label: "Department" },
+    { name: "currentDesignation", label: "Current Designation", placeholder: "Professor" },
     { name: "currentDesignationDate", label: "Current Designation Date", type: "date" },
-    { name: "passportNumber", label: "Applicant's Passport Number" },
+    { name: "passportNumber", label: "Passport Number" },
     { name: "travelCountry", label: "Country to Travel", placeholder: "Spain" },
     { 
       name: "purpose", 
       label: "Purpose of Visit", 
       type: "textarea",
-      placeholder: "e.g., to attend a conference, family vacation, etc."
+      placeholder: "e.g., to deliver a talk to the 'Conference Name' to be held at..."
     },
     { name: "eventName", label: "Event/Conference Name (optional)" },
     { name: "eventLocation", label: "Event Location/Address (optional)", type: "textarea" },
@@ -36,12 +35,15 @@ export const nocVisaTemplate: FormTemplate = {
       name: "fundingSource", 
       label: "Funding Source", 
       type: "textarea",
-      placeholder: "e.g., Self-funded or Institute funding"
+      placeholder: "e.g., Institute's Cumulative Professional Development Allowance (CPDA) fund and B & C & D allotted to employee"
     },
-    { name: "signature", label: "Applicant's Digital Signature", type: "signature" },
+    { name: "signature", label: "Digital Signature", type: "signature" },
+    { name: "recipientName", label: "To: Recipient Name" },
+    { name: "recipientDesignation", label: "Recipient Designation" },
+    { name: "recipientDepartment", label: "Recipient Department" },
   ],
 
   actions: {
-    sendToAdmin: true,
+    sendToAdmin: false,
   },
 }

@@ -10,14 +10,13 @@ export const undertakingNocPassportTemplate: FormTemplate = {
   pdf: UndertakingNocPassportPDF,
 
   fields: [
-    { name: "applicantName", label: "Applicant Name (Faculty/Dependent)" },
-    { name: "facultyName", label: "Faculty Name (If dependent is applying)" },
-    { name: "dependentMembers", label: "All dependent family members & relations (List all)", type: "textarea", placeholder: "List all family members with relationships" },
+    { name: "dependentMembers", label: "Dependent family members & relation", type: "textarea" },
+    { name: "name", label: "Name" },
     { name: "date", label: "Date", type: "date" },
-    { name: "department", label: "Department (Faculty)" },
+    { name: "department", label: "Department" },
 
     // ✅ signature field
-    { name: "signature", label: "Applicant's Digital Signature", type: "signature" },
+    { name: "signature", label: "Digital Signature", type: "signature" },
   ],
 
   actions: {
