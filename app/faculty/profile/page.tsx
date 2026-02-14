@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Pencil, Trash2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,11 +20,62 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { mockFaculty, mockDependents, mockEducation } from "@/lib/mock-data"
+import { Spinner } from "@/components/ui/spinner"
+import { mockEducation } from "@/lib/mock-data"
 import { toast } from "sonner"
+import { createClient } from "@/lib/supabase/client"
 
 export default function ProfilePage() {
-  const [dependents, setDependents] = useState(mockDependents)
+  const supabase = createClient()
+  const [faculty, setFaculty] = useState<any>(null)
+  const [dependents, setDependents] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        // Load profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+
+        // Load dependents
+        const { data: deps } = await supabase
+          .from('dependents')
+          .select('*')
+          .eq('profile_id', profile?.id || user.id)
+
+        setFaculty(profile)
+        setDependents(deps || [])
+      } catch (error) {
+        console.error('Error loading profile:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [supabase])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Spinner className="h-8 w-8" />
+      </div>
+    )
+  }
+
+  if (!faculty) {
+    return (
+      <div className="p-6">
+        <p className="text-muted-foreground">Please complete your profile first.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -51,33 +102,45 @@ export default function ProfilePage() {
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <div>
                   <Label className="text-muted-foreground">Employee ID</Label>
-                  <p className="font-medium">{mockFaculty.employeeId}</p>
+                  <p className="font-medium">{faculty.employee_id}</p>
                 </div>
                 <div>
                   <Label className="text-muted-foreground">Full Name</Label>
-                  <p className="font-medium">{mockFaculty.name}</p>
+                  <p className="font-medium">{faculty.full_name}</p>
                 </div>
                 <div>
                   <Label className="text-muted-foreground">Email</Label>
-                  <p className="font-medium">{mockFaculty.email}</p>
+                  <p className="font-medium">{faculty.email}</p>
                 </div>
                 <div>
                   <Label className="text-muted-foreground">Department</Label>
-                  <p className="font-medium">{mockFaculty.department}</p>
+                  <p className="font-medium">{faculty.department}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Designation</Label>
-                  <p className="font-medium">{mockFaculty.designation}</p>
+                  <Label className="text-muted-foreground">Present Designation</Label>
+                  <p className="font-medium">{faculty.present_designation || faculty.designation_at_joining}</p>
                 </div>
                 <div>
                   <Label className="text-muted-foreground">Date of Joining</Label>
                   <p className="font-medium">
-                    {new Date(mockFaculty.joiningDate).toLocaleDateString("en-IN", {
+                    {faculty.doj ? new Date(faculty.doj).toLocaleDateString("en-IN", {
                       day: "numeric",
                       month: "long",
                       year: "numeric",
-                    })}
+                    }) : 'N/A'}
                   </p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Gender</Label>
+                  <p className="font-medium">{faculty.gender || 'N/A'}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Nationality</Label>
+                  <p className="font-medium">{faculty.nationality || 'N/A'}</p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Contact Number</Label>
+                  <p className="font-medium">{faculty.contact_number || 'N/A'}</p>
                 </div>
               </div>
             </CardContent>
@@ -138,38 +201,58 @@ export default function ProfilePage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {dependents.map((dep) => (
-                    <TableRow key={dep.id}>
-                      <TableCell className="font-medium">{dep.name}</TableCell>
-                      <TableCell>{dep.relation}</TableCell>
-                      <TableCell>
-                        {new Date(dep.dob).toLocaleDateString("en-IN", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </TableCell>
-                      <TableCell>{dep.isDependent ? "Yes" : "No"}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive hover:text-destructive"
-                            onClick={() => {
-                              setDependents(dependents.filter((d) => d.id !== dep.id))
-                              toast.success("Dependent removed")
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                  {dependents.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                        No dependents added yet. Click "Add Dependent" to get started.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    dependents.map((dep) => (
+                      <TableRow key={dep.id}>
+                        <TableCell className="font-medium">{dep.name}</TableCell>
+                        <TableCell>{dep.relation}</TableCell>
+                        <TableCell>
+                          {dep.dob ? new Date(dep.dob).toLocaleDateString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          }) : 'N/A'}
+                        </TableCell>
+                        <TableCell>Yes</TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-destructive hover:text-destructive"
+                              onClick={async () => {
+                                try {
+                                  const { error } = await supabase
+                                    .from('dependents')
+                                    .delete()
+                                    .eq('id', dep.id)
+                                  
+                                  if (error) throw error
+                                  
+                                  setDependents(dependents.filter((d) => d.id !== dep.id))
+                                  toast.success("Dependent removed")
+                                } catch (error) {
+                                  console.error('Error deleting dependent:', error)
+                                  toast.error("Failed to remove dependent")
+                                }
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -209,7 +292,8 @@ export default function ProfilePage() {
   )
 }
 
-function AddDependentDialog({ onAdd }: { onAdd: (dep: (typeof mockDependents)[0]) => void }) {
+function AddDependentDialog({ onAdd }: { onAdd: (dep: any) => void }) {
+  const supabase = createClient()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState("")
@@ -219,20 +303,57 @@ function AddDependentDialog({ onAdd }: { onAdd: (dep: (typeof mockDependents)[0]
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    onAdd({
-      id: Date.now().toString(),
-      name,
-      relation,
-      dob,
-      isDependent: true,
-    })
-    toast.success("Dependent added successfully")
-    setOpen(false)
-    setLoading(false)
-    setName("")
-    setRelation("")
-    setDob("")
+
+    try {
+      // Get current user and profile
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        toast.error("You must be logged in to add dependents")
+        return
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single()
+
+      if (!profile) {
+        toast.error("Profile not found")
+        return
+      }
+
+      // Insert the dependent
+      const { data: newDependent, error } = await supabase
+        .from('dependents')
+        .insert({
+          profile_id: profile.id,
+          name,
+          relation,
+          dob,
+        })
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Error adding dependent:', error)
+        toast.error("Failed to add dependent")
+        return
+      }
+
+      // Call the callback to update the parent state
+      onAdd(newDependent)
+      toast.success("Dependent added successfully")
+      setOpen(false)
+      setName("")
+      setRelation("")
+      setDob("")
+    } catch (error) {
+      console.error('Error in handleSubmit:', error)
+      toast.error("An error occurred while adding the dependent")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

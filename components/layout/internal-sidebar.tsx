@@ -20,6 +20,8 @@ import {
   FileBarChart,
   History,
   CreditCard,
+  FileText,
+  FolderCheck,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -34,7 +36,9 @@ const facultyLinks = [
   { href: "/faculty/profile", label: "My Profile", icon: User },
   { href: "/faculty/leaves", label: "Leave Management", icon: Calendar },
   { href: "/faculty/payroll", label: "Payroll", icon: DollarSign },
+  { href: "/faculty/forms", label: "Forms", icon: FileText },
   { href: "/faculty/settings", label: "Settings", icon: Settings },
+  
 ]
 
 const adminLinks = [
@@ -44,6 +48,7 @@ const adminLinks = [
   { href: "/admin/employees", label: "Employees", icon: Users },
   { href: "/admin/payroll", label: "Payroll", icon: CreditCard },
   { href: "/admin/leaves", label: "Leave Approvals", icon: Calendar },
+  { href: "/admin/annexures", label: "Annexures", icon: FolderCheck },
   { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
   { href: "/admin/reports", label: "Reports", icon: FileBarChart },
   { href: "/admin/audit-logs", label: "Audit Logs", icon: History },

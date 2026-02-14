@@ -15,6 +15,7 @@ const breadcrumbMap: Record<string, { label: string; href?: string }[]> = {
   "/admin/scrutiny": [{ label: "Dashboard", href: "/admin" }, { label: "Scrutiny" }],
   "/admin/leaves": [{ label: "Dashboard", href: "/admin" }, { label: "Leave Approvals" }],
   "/admin/employees": [{ label: "Dashboard", href: "/admin" }, { label: "Employees" }],
+  "/admin/annexures": [{ label: "Dashboard", href: "/admin" }, { label: "Annexures" }],
   "/admin/settings": [{ label: "Dashboard", href: "/admin" }, { label: "Master Settings" }],
 }
 
